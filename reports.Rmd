@@ -1,0 +1,49 @@
+---
+title: "Report on USA gun murder"
+author: "Kaycee"
+date: "19 June 2018"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introcution
+
+This is a report on 2010 gun murder rates obtained from FBI reports. The original data wa obtained from [this wikipedia page]
+(https://en.wikipedia.org/wiki/Murder_in_the_United_States_by_state).
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+We are going to use the following library:
+
+```{r loading-libs,message=FALSE}
+library(tidyverse,ggthemes)
+```
+
+and load the data we arleady wrangled:
+
+```{r}
+load("rda/murders.rda")
+```
+
+## Murder rate by state 
+
+We note the large state tp state variability by generating a barplot showing the murder rate by state:
+
+```{r murder-rate-by-state,echo=FALSE}
+library(ggthemes)
+r<-murders %>% 
+  summarise(rate=sum(total)/sum(population)*10^6) %>% .$rate
+murders %>% ggplot(aes(population/10^6,total,label=abb))+
+  geom_point(aes(col=region),size=3)+
+  geom_text(nudge_x = 0.05)+
+  geom_abline(intercept = log10(r),lty=2,col="darkgrey")+
+  scale_x_log10()+
+  scale_y_log10()+
+  labs(title="USA gun murder rate in 2010", xlab="Population in millions(log sclae)",
+       ylab="Total number of murders(log scale)", col="Region")+
+  theme_economist()
+
+
